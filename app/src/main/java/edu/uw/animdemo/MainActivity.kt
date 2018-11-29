@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v4.view.MotionEventCompat
+import android.support.v4.view.MotionEventCompat.*
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.GestureDetector
@@ -64,16 +65,42 @@ class MainActivity : AppCompatActivity() {
                 //                view.ball.dy = (y - view.ball.cy)/Math.abs(y - view.ball.cy)*30;
                 return true
             }
-            MotionEvent.ACTION_MOVE //move finger
-            ->
+            MotionEvent.ACTION_MOVE -> {
                 //Log.v(TAG, "finger move");
                 //                view.ball.cx = x;
                 //                view.ball.cy = y;
+                val pointer = MotionEventCompat.getActionIndex(event)
+                val pointerID = MotionEventCompat.getPointerId(event, pointer)
+                for (i in 1 until event.pointerCount) {
+                    val id = getPointerId(event, i)
+                    view!!.moveTouch(id,getX(event, pointerID), getY(event, pointerID))
+                }
                 return true
+            }
+
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                val pointer = MotionEventCompat.getActionIndex(event)
+                val pointerID = MotionEventCompat.getPointerId(event, pointer)
+                view!!.addTouch(pointerID, getX(event, pointerID), getY(event, pointerID))
+                return true
+            }
+
+            MotionEvent.ACTION_POINTER_UP -> {
+                val pointer = MotionEventCompat.getActionIndex(event)
+                val pointerID = MotionEventCompat.getPointerId(event, pointer)
+                view!!.removeTouch(pointerID)
+                return true
+            }
+
             MotionEvent.ACTION_UP //lift finger up
                 , MotionEvent.ACTION_CANCEL //aborted gesture
                 , MotionEvent.ACTION_OUTSIDE //outside bounds
-            -> return super.onTouchEvent(event)
+            -> {
+                val pointer = MotionEventCompat.getActionIndex(event)
+                val pointerID = MotionEventCompat.getPointerId(event, pointer)
+                view!!.removeTouch(pointerID)
+                return super.onTouchEvent(event)
+            }
             else -> return super.onTouchEvent(event)
         }
     }

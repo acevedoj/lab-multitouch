@@ -76,6 +76,8 @@ public class DrawingView extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
+
+
     /**
      * Override this method to specify drawing.
      */
